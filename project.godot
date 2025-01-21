@@ -1,0 +1,39 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[addon_importer]
+
+show_on_startup=false
+
+[application]
+
+config/name="Easy Saving"
+config/tags=PackedStringArray("addon")
+config/features=PackedStringArray("4.4", "GL Compatibility")
+config/icon="res://icon.svg"
+
+[easy_fullscreen]
+
+enabled=true
+action="fullscreen"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/ColorPreview/plugin.cfg", "res://addons/easy_fullscreen/plugin.cfg", "res://addons/easy_saving/plugin.cfg", "res://addons/script-ide/plugin.cfg")
+
+[godot_easy]
+
+saving/debug_log=true
+saving/auto_repair=true
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
