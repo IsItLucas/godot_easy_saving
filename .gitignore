@@ -16,4 +16,4 @@ mono_crash.*.json
 
 # Custom folders.
 ignores/
-addons/script-ide
+addons/script-ide/
