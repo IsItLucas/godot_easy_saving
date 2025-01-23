@@ -31,21 +31,20 @@ action="fullscreen"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/easy_saving/plugin.cfg", "res://addons/script-ide/plugin.cfg")
+enabled=PackedStringArray("res://addons/easy_saving/plugin.cfg", "res://addons/editor_icon_previewer/plugin.cfg", "res://addons/script-ide/plugin.cfg")
 
 [godot_easy]
 
 save/debug_log=true
+save/match_types=true
 save/auto_repair=true
 save/encrypt=false
 save/autosave_interval=0
 save/save={
-"test": Vector2(0, 0),
 "value_spin_box_1": 0,
 "value_spin_box_2": 0,
 "value_spin_box_3": 0
 }
-save/match_types=true
 
 [rendering]
 

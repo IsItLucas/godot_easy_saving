@@ -19,6 +19,30 @@ const ENCRYPTION_NAME := "enc_%s"
 const FOLDER_PATH := "user://save/"
 
 
+## Prints the current save data as string to the debug log.
+static func print_data() -> void:
+	print(str(Save.data))
+
+
+## Prints the current save data as string to the debug log in a pretty way.
+static func print_data_pretty() -> void:
+	# Get type icons.
+	var icons_path := "res://addons/easy_saving/icons/"
+	var icons_extension := ".svg"
+	
+	# Start print message.
+	print("----- Printing data from file %s -----" % get_save_file_path(Save.cur_slot))
+	
+	# Print dictionary.
+	for key: String in Save.data:
+		var value: Variant = Save.data[key]
+		var icon := icons_path + type_string(typeof(value)) + icons_extension
+		print_rich("[img]" + icon + "[/img] [b]%s[/b]:\t%s" % [key, value])
+	
+	# End print message.
+	print("----- Print ended -----")
+
+
 ## Returns [code]true[/code] if the given slot corresponds to an encrypted file. Returns [code]false[/code] otherwise.
 static func is_slot_encrypted(slot: int) -> bool:
 	return FileAccess.file_exists(get_encryption_file_path(slot))

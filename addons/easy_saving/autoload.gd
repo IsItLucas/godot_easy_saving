@@ -26,6 +26,12 @@ const FOLDER_PATH := "user://save/"
 ## The current data of the save file.
 var data := {}
 
+## The last slot accessed. Changes when a save file is loaded or saved to match the corresponding slot of the operation.
+var cur_slot := 0
+
+## The amount of times the file was autosaved.
+var autosave_count := 0
+
 ## The password used to encrypt save files. Unique to every single user.
 var password := OS.get_unique_id()
 
@@ -35,17 +41,75 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 
 
+func _process(_delta: float) -> void:
+	# Check if autosaving is enabled.
+	var autosave_interval: float = SaveHelper.get_setting("autosave_interval", 0.0)
+	if autosave_interval <= 0.0:
+		return
+	
+	# Check if enough time has passed.
+	var elapsed_secs := Time.get_ticks_msec() / 1000.0
+	if elapsed_secs <= (autosave_interval + autosave_count) * 60.0:
+		return
+	
+	# Debug log.
+	var debug_log: bool = SaveHelper.get_setting("debug_log", true)
+	if debug_log:
+		print("Autosaving...")
+	
+	# Save.
+	autosave_count += 1
+	save_file(cur_slot)
+
+
 ## Sets the [member data] [param key] to [param value] and emits [signal data_changed].
 func push(key: String, value: Variant) -> void:
-	data[key] = value
+	# User can use an "/" to access sub dictionaries.
+	var nested_dicts: PackedStringArray = key.split("/")
+	
+	# Don't do any complex operations if the user is not trying to access a sub dict.
+	if nested_dicts.size() <= 1:
+		# Set "key" value to "value".
+		data[key] = value
+		return
+	
+	# Find the last nested dict.
+	var dict: Dictionary = data[key]
+	nested_dicts.remove_at(0)
+	for dict_name: String in nested_dicts:
+		dict = dict[dict_name]
+	
+	# Set "key" value to "value".
+	dict[key] = value
 
 
 ## Returns the [member data] [param key] current value. If it doesn't exist, [param default] is returned instead.
 func pull(key: String, default: Variant = null) -> Variant:
+	# User can use an "/" to access sub dictionaries.
+	var nested_dicts: PackedStringArray = key.split("/")
+	
+	# Don't do any complex operations if the user is not trying to access a sub dict.
+	if nested_dicts.size() <= 1:
+		# If "key" can be found in "data" - return its value.
+		if data.has(key):
+			return data[key] 
+		
+		# If not - return the given default value and print an error.
+		push_warning("Trying to pull a key that doesn't exist. Returning the default value instead.")
+		return default
+	
+	# Find the last nested dict.
+	var dict: Dictionary = data[key]
+	nested_dicts.remove_at(0)
+	for dict_name: String in nested_dicts:
+		dict = dict[dict_name]
+	
+	# If "key" can be found in the last nested dict - return its value.
 	if data.has(key):
 		return data[key]
 	
-	printerr("Trying to pull a key that doesn't exist. Returning the default value instead.")
+	# If not - return the given default value and print an error.
+	push_warning("Trying to pull a key that doesn't exist. Returning the default value instead.")
 	return default
 
 
@@ -55,6 +119,7 @@ func load_file(slot: int = 0) -> void:
 	assert(slot >= 0, "Slot must be a positive number.")
 	
 	# Load the file.
+	cur_slot = slot
 	data = load_from_path(SaveHelper.get_save_file_path(slot), SaveHelper.is_slot_encrypted(slot))
 	
 	# Try to repair the file if it's damaged.
@@ -72,82 +137,14 @@ func load_file(slot: int = 0) -> void:
 		print("Data result after repairs: " + str(data))
 
 
-## Adds missing keys to the loaded save file and also remove additional keys.
-func repair_keys() -> void:
-	# Get the default data.
-	var default_data: Dictionary = SaveHelper.get_setting("save", {})
-	var debug_log: bool = SaveHelper.get_setting("debug_log", true)
-	
-	# Add missing keys.
-	data.merge(default_data)
-	
-	# Remove additional keys.
-	for key: String in data.keys():
-		if not default_data.has(key):
-			if debug_log:
-				print("Removed additional key \"%s\"." % key)
-			
-			data.erase(key)
-
-
-## Checks if the type of all loaded save file values match the default data types.
-## If not, reset the value to default.
-func repair_types() -> void:
-	# Get the default data.
-	var default_data: Dictionary = SaveHelper.get_setting("save", {})
-	var debug_log: bool = SaveHelper.get_setting("debug_log", true)
-	
-	# Loop trough every key.
-	for key: String in data.keys():
-		# Get values.
-		var this_value: Variant = data[key]
-		var default_value: Variant = default_data[key]
-		
-		# Get types.
-		var this_type: Variant.Type = typeof(this_value)
-		var default_type: Variant.Type = typeof(default_value)
-		
-		# If the types match - do nothing.
-		if this_type == default_type:
-			continue
-		
-		# Forgive ints and floats to prevent confusion.
-		var is_forgiven := false
-		var forgiven_map: Array[Array] = [
-			# Forgive the loaded type if it can be found in the array with the expected type.
-			[TYPE_INT, TYPE_FLOAT],
-			[TYPE_VECTOR2I, TYPE_VECTOR2],
-			[TYPE_VECTOR3I, TYPE_VECTOR3],
-			[TYPE_VECTOR4I, TYPE_VECTOR4],
-			[TYPE_PACKED_FLOAT32_ARRAY, TYPE_PACKED_FLOAT64_ARRAY, TYPE_PACKED_INT32_ARRAY, TYPE_PACKED_INT64_ARRAY],
-		]
-		
-		for array: Array in forgiven_map:
-			if array.has(this_type) and array.has(default_type):
-				is_forgiven = true
-		
-		# But if the types don't match - reset the value to default.
-		if is_forgiven:
-			continue
-		
-		printerr("Value for key \"%s\" don't match its original value: Received %s (%s), expected %s (%s)." % [
-			key,
-			type_string(this_type),
-			str(this_value),
-			type_string(default_type),
-			str(default_value),
-		])
-		
-		this_value = default_value
-		data[key] = this_value
-
-
 ## Saves the current [member data] to the file at the given [param slot]. If a file already exists at the given [param slot], it will be updated.
 func save_file(slot: int = 0) -> void:
 	# Check if slot is a positive number.
 	assert(slot >= 0, "Slot must be a positive number.")
 	
 	# Get addon settings.
+	cur_slot = slot
+	
 	var debug_log: bool = SaveHelper.get_setting("debug_log", true)
 	var is_encrypted: bool = SaveHelper.get_setting("encrypted", true)
 	
@@ -234,3 +231,70 @@ func load_from_path(path: String, is_encrypted: bool) -> Dictionary:
 	
 	# Get the file as data.
 	return file.get_var()
+
+
+## Adds missing keys to the loaded save file and also remove additional keys.
+func repair_keys() -> void:
+	# Get the default data.
+	var default_data: Dictionary = SaveHelper.get_setting("save", {})
+	
+	# Add missing keys.
+	data.merge(default_data)
+	
+	# Remove additional keys.
+	for key: String in data.keys():
+		if not default_data.has(key):
+			push_warning("Removed additional key \"%s\"." % key)
+			data.erase(key)
+
+
+## Checks if the type of all loaded save file values match the default data types.
+## If not, reset the value to default.
+func repair_types() -> void:
+	# Get the default data.
+	var default_data: Dictionary = SaveHelper.get_setting("save", {})
+	var debug_log: bool = SaveHelper.get_setting("debug_log", true)
+	
+	# Loop trough every key.
+	for key: String in data.keys():
+		# Get values.
+		var this_value: Variant = data[key]
+		var default_value: Variant = default_data[key]
+		
+		# Get types.
+		var this_type: Variant.Type = typeof(this_value)
+		var default_type: Variant.Type = typeof(default_value)
+		
+		# If the types match - do nothing.
+		if this_type == default_type:
+			continue
+		
+		# Forgive ints and floats to prevent confusion.
+		var is_forgiven := false
+		var forgiven_map: Array[Array] = [
+			# Forgive the loaded type if it can be found in the array with the expected type.
+			[TYPE_INT, TYPE_FLOAT],
+			[TYPE_VECTOR2I, TYPE_VECTOR2],
+			[TYPE_VECTOR3I, TYPE_VECTOR3],
+			[TYPE_VECTOR4I, TYPE_VECTOR4],
+			[TYPE_PACKED_FLOAT32_ARRAY, TYPE_PACKED_FLOAT64_ARRAY, TYPE_PACKED_INT32_ARRAY, TYPE_PACKED_INT64_ARRAY],
+		]
+		
+		for array: Array in forgiven_map:
+			if array.has(this_type) and array.has(default_type):
+				is_forgiven = true
+		
+		# But if the types don't match - reset the value to default.
+		if is_forgiven:
+			continue
+		
+		push_warning("Value for key \"%s\" don't match its original value: Received %s (%s), expected %s (%s)." % [
+			key,
+			type_string(this_type),
+			str(this_value),
+			type_string(default_type),
+			str(default_value),
+		])
+		
+		this_value = default_value
+		data[key] = this_value
