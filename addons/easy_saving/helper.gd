@@ -50,12 +50,17 @@ static func is_slot_encrypted(slot: int) -> bool:
 
 ## Sets a given GES setting to the given value.
 static func set_setting(setting: String, value: Variant) -> void:
-	ProjectSettings.set_setting("godot_easy/" + SETTINGS_NAME + "/" + setting, value)
+	var path := get_setting_path(setting)
+	if not ProjectSettings.has_setting(path):
+		printerr("Couldn't find custom setting \"%s\"." % setting)
+	
+	ProjectSettings.set_setting(path, value)
 
 
 ## Returns the current value of a GES project setting.
 static func get_setting(setting: String, default: Variant = null) -> Variant:
-	return ProjectSettings.get_setting("godot_easy/" + SETTINGS_NAME + "/" + setting, default)
+	var path := get_setting_path(setting)
+	return ProjectSettings.get_setting(path, default)
 
 
 ## Returns the Project Setting path for the given GES setting.

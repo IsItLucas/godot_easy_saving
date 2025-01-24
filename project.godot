@@ -38,7 +38,7 @@ enabled=PackedStringArray("res://addons/easy_saving/plugin.cfg", "res://addons/s
 save/debug_log=true
 save/match_types=true
 save/auto_repair=true
-save/encrypt=false
+save/encrypt=true
 save/autosave_interval=0
 save/save={
 &"Teste": true

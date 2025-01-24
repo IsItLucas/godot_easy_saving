@@ -146,7 +146,7 @@ func save_file(slot: int = 0) -> void:
 	cur_slot = slot
 	
 	var debug_log: bool = SaveHelper.get_setting("debug_log", true)
-	var is_encrypted: bool = SaveHelper.get_setting("encrypted", true)
+	var is_encrypted: bool = SaveHelper.get_setting("encrypt", true)
 	
 	# Create variables.
 	var encryption_path := SaveHelper.get_encryption_file_path(slot)
@@ -190,7 +190,7 @@ func save_file(slot: int = 0) -> void:
 		# Remove a file to inform the addon that this save file is NOT encrypted.
 		if FileAccess.file_exists(encryption_path):
 			# Remove file.
-			OS.move_to_trash(encryption_path)
+			DirAccess.remove_absolute(encryption_path)
 			
 			# Debug log.
 			if debug_log:
@@ -199,7 +199,7 @@ func save_file(slot: int = 0) -> void:
 	# Log to the console.
 	save_finished.emit(slot, data)
 	if debug_log:
-		print("Successfully save file %s at \"%s\"." % [str(slot), file_path])
+		print("Successfully save file %s at \"%s\"\tEncrypted: %s." % [str(slot), file_path, str(is_encrypted)])
 
 
 ## Loads a save file at the given [param path].
