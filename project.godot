@@ -33,12 +33,6 @@ action="fullscreen"
 
 enabled=PackedStringArray("res://addons/easy_saving/plugin.cfg", "res://addons/script-ide/plugin.cfg")
 
-[godot_easy]
-
-save/save={
-"Test": true
-}
-
 [rendering]
 
 renderer/rendering_method="gl_compatibility"

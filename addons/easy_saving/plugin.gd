@@ -11,6 +11,7 @@ const CUSTOM_SETTINGS: Array[Array] = [
 	["match_types", true],
 	["auto_repair", true],
 	["encrypt", false],
+	["save_on_quit", true],
 	["autosave_interval", 0],
 	["save", {}],
 ]

@@ -39,6 +39,9 @@ var password := OS.get_unique_id()
 func _ready() -> void:
 	# Make sure this autoload runs even when the game is paused.
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	
+	# Prevent the game from closing before the save allows it.
+	ProjectSettings.set_setting("application/config/auto_accept_quit", false)
 
 
 func _process(_delta: float) -> void:
@@ -60,6 +63,26 @@ func _process(_delta: float) -> void:
 	# Save.
 	autosave_count += 1
 	save_file(cur_slot)
+
+
+func _notification(what: int) -> void:
+	# Check if the project is about to be closed.
+	if what != NOTIFICATION_WM_CLOSE_REQUEST:
+		return
+	
+	# Save the data if necessay.
+	var save_on_quit: bool = SaveHelper.get_setting("save_on_quit", true)
+	var debug_log: bool = SaveHelper.get_setting("debug_log", true)
+	if save_on_quit:
+		save_file(cur_slot)
+	
+	# Quit.
+	await save_finished
+	
+	if debug_log:
+		print("Quitting...")
+	
+	get_tree().quit()
 
 
 ## Sets the [member data] [param key] to [param value] and emits [signal data_changed].
