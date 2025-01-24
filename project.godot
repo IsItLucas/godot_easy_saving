@@ -31,7 +31,7 @@ action="fullscreen"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/easy_saving/plugin.cfg", "res://addons/editor_icon_previewer/plugin.cfg", "res://addons/script-ide/plugin.cfg")
+enabled=PackedStringArray("res://addons/easy_saving/plugin.cfg", "res://addons/script-ide/plugin.cfg")
 
 [godot_easy]
 
@@ -41,9 +41,7 @@ save/auto_repair=true
 save/encrypt=false
 save/autosave_interval=0
 save/save={
-"value_spin_box_1": 0,
-"value_spin_box_2": 0,
-"value_spin_box_3": 0
+&"Teste": true
 }
 
 [rendering]

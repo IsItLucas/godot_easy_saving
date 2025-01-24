@@ -58,6 +58,11 @@ static func get_setting(setting: String, default: Variant = null) -> Variant:
 	return ProjectSettings.get_setting("godot_easy/" + SETTINGS_NAME + "/" + setting, default)
 
 
+## Returns the Project Setting path for the given GES setting.
+static func get_setting_path(setting: String) -> String:
+	return "godot_easy/" + SETTINGS_NAME + "/" + setting
+
+
 ## Returns the full path that points to the save file corresponding to the given slot.
 static func get_save_file_path(slot: int) -> String:
 	return (FOLDER_PATH + FILE_NAME) % str(slot)
