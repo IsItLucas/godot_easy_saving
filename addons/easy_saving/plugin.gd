@@ -42,5 +42,5 @@ func set_setting(setting_name: String, setting_value: Variant) -> void:
 	# If the value is null, the setting will be removed. But if not, the setting is going to be added.
 	var path := SaveHelper.get_setting_path(setting_name)
 	if not ProjectSettings.has_setting(path):
-		SaveHelper.set_setting(setting_name, setting_value)
+		ProjectSettings.set_setting(path, setting_value)
 		ProjectSettings.set_initial_value(path, setting_value)
