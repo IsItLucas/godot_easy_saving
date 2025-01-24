@@ -40,9 +40,6 @@ save/match_types=true
 save/auto_repair=true
 save/encrypt=true
 save/autosave_interval=0
-save/save={
-&"Teste": true
-}
 
 [rendering]
 
