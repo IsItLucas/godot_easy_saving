@@ -22,3 +22,10 @@ GES (Godot Easy Saving) is a simple and lightweight addon for the Godot Engine t
 
 ## Usage 💾🔐✨
 Documentation can be found [here](https://github.com/IsItLucas/godot_easy_saving/wiki).
+
+## Contributions 🤝🌍
+Contributions are welcome! Feel free to open issues or submit pull requests to improve this addon.
+See `CODE OF CONDUCT` for more details. 🌟
+
+## License 📜⚖️
+This project is licensed under the MIT License. See the `LICENSE` file for more details. ✅
