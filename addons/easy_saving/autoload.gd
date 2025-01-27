@@ -247,7 +247,7 @@ func load_from_path(path: String, is_encrypted: bool) -> Dictionary:
 	var open_error := FileAccess.get_open_error()
 	if open_error != OK:
 		# Operation failed.
-		printerr(error_string(open_error))
+		push_error(error_string(open_error))
 		load_finished.emit(open_error)
 		
 		return default_dict

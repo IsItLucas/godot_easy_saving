@@ -6,7 +6,7 @@ class_name SaveHelper extends Node
 ## This is mainly used by GES - Godot Easy Saving, but feel free to use it if you want.
 
 
-## The project settings related to the addon prefix.
+## The prefix of the project settings related to the addon.
 const SETTINGS_NAME := "save"
 
 ## The save file name.
@@ -48,22 +48,22 @@ static func is_slot_encrypted(slot: int) -> bool:
 	return FileAccess.file_exists(get_encryption_file_path(slot))
 
 
-## Sets a given GES setting to the given value.
+## Sets a given GES [param setting] to the given [param value].
 static func set_setting(setting: String, value: Variant) -> void:
 	var path := get_setting_path(setting)
 	if not ProjectSettings.has_setting(path):
-		printerr("Couldn't find custom setting \"%s\"." % setting)
+		push_error("Couldn't find custom setting \"%s\"." % setting)
 	
 	ProjectSettings.set_setting(path, value)
 
 
-## Returns the current value of a GES project setting.
+## Returns the current [param value] of a GES project [param setting].
 static func get_setting(setting: String, default: Variant = null) -> Variant:
 	var path := get_setting_path(setting)
 	return ProjectSettings.get_setting(path, default)
 
 
-## Returns the Project Setting path for the given GES setting.
+## Returns the Project Setting path for the given GES [param setting].
 static func get_setting_path(setting: String) -> String:
 	return "godot_easy/" + SETTINGS_NAME + "/" + setting
 
