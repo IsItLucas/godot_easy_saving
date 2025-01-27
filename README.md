@@ -17,8 +17,15 @@ GES (Godot Easy Saving) is a simple and lightweight addon for the Godot Engine t
 
 ## Configuration ⚙️🖥️🎚️
 1. Go to Project > Project Settings > Godot Easy > Save.
-2. Set the default save dictionary and adjust the settings as you like.
-3. You're all set! Use the defined shortcut to switch between fullscreen and windowed modes. ✅🎉
+2. Customize the addon's behaviour as you like.
+3. You're all set! ✅🎉
 
-## Usage 🎮⌨️🖥️
+## Usage 💾🔐✨
 Documentation can be found [here](https://github.com/IsItLucas/godot_easy_saving/wiki).
+
+## Contributions 🤝🌍
+Contributions are welcome! Feel free to open issues or submit pull requests to improve this addon.
+See `CODE OF CONDUCT` for more details. 🌟
+
+## License 📜⚖️
+This project is licensed under the MIT License. See the `LICENSE` file for more details. ✅
