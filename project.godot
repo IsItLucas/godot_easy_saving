@@ -22,7 +22,7 @@ config/icon="uid://bqi4o6se4bgy3"
 
 [autoload]
 
-Save="*res://addons/easy_saving/autoload.gd"
+Save="*res://addons/easy_saving/save.gd"
 
 [easy_fullscreen]
 

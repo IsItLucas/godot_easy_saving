@@ -1,0 +1,101 @@
+[gd_scene load_steps=3 format=3 uid="uid://jwql6dmk5vys"]
+
+[ext_resource type="Script" uid="uid://sm0qgjshjaj" path="res://addons/easy_saving/example/example.gd" id="1_sf5xs"]
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_m2dvw"]
+color = Color(0.843137, 0.843137, 0.843137, 1)
+thickness = 2
+
+[node name="ExampleScene" type="CanvasLayer"]
+script = ExtResource("1_sf5xs")
+
+[node name="MainContainer" type="VBoxContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 194.0
+offset_right = -194.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 32
+alignment = 1
+
+[node name="SlotContainer" type="HBoxContainer" parent="MainContainer"]
+layout_mode = 2
+theme_override_constants/separation = 64
+alignment = 1
+
+[node name="SlotLabel" type="Label" parent="MainContainer/SlotContainer"]
+layout_mode = 2
+text = "Save Slot:"
+
+[node name="SlotSpinBox" type="SpinBox" parent="MainContainer/SlotContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(125, 50)
+layout_mode = 2
+allow_greater = true
+
+[node name="Separator1" type="HSeparator" parent="MainContainer"]
+layout_mode = 2
+theme_override_constants/separation = 32
+theme_override_styles/separator = SubResource("StyleBoxLine_m2dvw")
+
+[node name="DataContainer" type="VBoxContainer" parent="MainContainer"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="MainContainer/DataContainer"]
+layout_mode = 2
+text = "Save Data"
+horizontal_alignment = 1
+
+[node name="SpinBoxesContainer" type="HBoxContainer" parent="MainContainer/DataContainer"]
+layout_mode = 2
+theme_override_constants/separation = 128
+alignment = 1
+
+[node name="ValueA" type="SpinBox" parent="MainContainer/DataContainer/SpinBoxesContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(125, 50)
+layout_mode = 2
+allow_greater = true
+allow_lesser = true
+
+[node name="ValueB" type="SpinBox" parent="MainContainer/DataContainer/SpinBoxesContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(125, 50)
+layout_mode = 2
+allow_greater = true
+allow_lesser = true
+
+[node name="ValueC" type="SpinBox" parent="MainContainer/DataContainer/SpinBoxesContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(125, 50)
+layout_mode = 2
+allow_greater = true
+allow_lesser = true
+
+[node name="Separator2" type="HSeparator" parent="MainContainer"]
+layout_mode = 2
+theme_override_constants/separation = 32
+theme_override_styles/separator = SubResource("StyleBoxLine_m2dvw")
+
+[node name="ButtonsContainer" type="HBoxContainer" parent="MainContainer"]
+layout_mode = 2
+theme_override_constants/separation = 128
+alignment = 1
+
+[node name="SaveButton" type="Button" parent="MainContainer/ButtonsContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(125, 50)
+layout_mode = 2
+text = "Save"
+
+[node name="LoadButton" type="Button" parent="MainContainer/ButtonsContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(125, 50)
+layout_mode = 2
+text = "Load"
+
+[connection signal="value_changed" from="MainContainer/SlotContainer/SlotSpinBox" to="." method="_on_slot_spin_box_value_changed"]
+[connection signal="pressed" from="MainContainer/ButtonsContainer/SaveButton" to="." method="_on_save_button_pressed"]
+[connection signal="pressed" from="MainContainer/ButtonsContainer/LoadButton" to="." method="_on_load_button_pressed"]
