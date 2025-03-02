@@ -44,6 +44,14 @@ const DEFAULT_DATA: Dictionary = {
 ## 2 - Errors and All Messages,
 const DEBUG_LEVEL: int = 1
 
+## Determines whether [member data] will be saved automatically when the
+## application is closed or not.
+const SAVE_ON_QUIT: bool = true
+
+
+## Defines the interval between autosaves in seconds.
+## If this value is smaller or equal to 0, autosaving will be disabled.
+var autosave_interval := 1
 
 ## The current section's data.
 ## This dictionary is used in basically all save operations.
@@ -54,7 +62,63 @@ var data: Dictionary = DEFAULT_DATA.duplicate(true)
 var slot: int = -1
 
 
+## The autosave timer reference.
+var timer: Timer
+
+
+func _ready() -> void:
+	# Create a timer responsible for automatically saving the data.
+	_create_autosave_timer()
+
+
+func _notification(what: int) -> void:
+	# Only listen to close requests.
+	if what != NOTIFICATION_WM_CLOSE_REQUEST:
+		return
+	
+	# Make sure auto accept quit is disabled.
+	assert(not ProjectSettings.get_setting("application/config/auto_accept_quit", true) or not SAVE_ON_QUIT,
+		"Save on quit functionality is only available if project setting \"application/config/auto_accept_quit\" is disabled"
+	)
+	
+	# Automatically save the file.
+	if SAVE_ON_QUIT:
+		save()
+	
+	# Debug log.
+	if DEBUG_LEVEL >= 1:
+		print("Quitting and saving")
+
+
 #region Utils - Do not use these.
+## Creates a timer responsible for automatically saving the data.
+func _create_autosave_timer() -> void:
+	# Create the autosave timer.
+	timer = Timer.new()
+	add_child(timer)
+	
+	if autosave_interval > 0:
+		timer.start(autosave_interval)
+	else:
+		timer.start(60)
+	
+	timer.one_shot = true
+	
+	timer.timeout.connect(func _on_autosave_timer_timeout() -> void:
+		# Autosave.
+		if autosave_interval > 0:
+			save()
+		
+		# Restart timer.
+		# The timer has to be manually restarted so the autosave interval
+		# can be updated during runtime.
+		if autosave_interval > 0:
+			timer.start(autosave_interval)
+		else:
+			timer.start(60)
+	)
+
+
 ## Creates all folders present in [member SAVE_DIRECTORY] in the user's file system.
 func _create_directory() -> void:
 	# Divide the path into different folders.
