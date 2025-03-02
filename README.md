@@ -3,6 +3,8 @@ GES (Godot Easy Saving) is a simple and lightweight addon for the Godot Engine t
 
 ## Features 🎛️📦🖱️
 - Easily enable or disable auto saving;
+- Autosave functionality with adjustable intervals;
+- Autosave on quit functionality;
 - Encrypt files for greater security;
 - Signals emitted when a save file is loaded, saved or changed;
 - Infinite save slots - save as many files as you want;
